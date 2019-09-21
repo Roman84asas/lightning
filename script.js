@@ -7,14 +7,15 @@
 
     let w             = canvas.width  = innerWidth;
     let h             = canvas.height = innerHeight;
-    let canvaColl = `#232332`;
-    
+    let canvaColl     = `#232332`;
     let mx            = 0;
     let my            = 0;
     let toggle        = 0;
     let circles       = [];
     let circlesCount  = 4;
-    const maxLength   = 800;
+    let stepLength    = 2;
+    let maxOffset     = 6;
+    let maxLength     = 800;
 
     class Circle {
         constructor(x, y) {
@@ -46,21 +47,34 @@
     function creatLigthing() {
         for (let i = 0; i < circles.length; i++) {
             for (let j = i + 1; j < circles.length; j++) {
-                let dist = getDistance(circles[a], circles[b]);
-                let cance = dist/maxLength;
+                let dist = getDistance(circles[i], circles[j]);
+                let chance = dist / maxLength;
                 
-                if (cance > Math.random()) continue;
+                if (chance > Math.random()) continue;
+
+                let otherColor = chance * 255;
+                let stepsCount = dist / stepLength;
+                let sx         = circles[i].x;
+                let sy         = circles[i].y;
 
                 ctx.lineWidth   = 2.5;
-                ctx.strokeStyle = 'white';
+                ctx.strokeStyle = `rgb(255, ${otherColor}, ${otherColor})`;
 
                 ctx.beginPath();
                 ctx.moveTo(circles[i].x, circles[i].y);
-                ctx.lineTo(circles[j].x, circles[j].y);
+                for (let c = stepsCount; c > 1; c--){
+                    let pathLength = getDistance(circles[i], {x: sx, y: sy});
+                    let offset     = Math.sin(pathLength / dist * Math.PI) * maxOffset;
+
+                    sx += (circles[j].x - sx) / c + Math.random() * offset * 2 - offset;
+                    sy += (circles[j].y - sy) / c + Math.random() * offset * 2 - offset;
+
+                    ctx.lineTo(sx, sy);
+                }
                 ctx.stroke();
             }
         }
-    };
+    }
 
     function getDistance(a, b) {
         return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
