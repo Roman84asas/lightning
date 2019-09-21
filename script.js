@@ -14,6 +14,7 @@
     let toggle        = 0;
     let circles       = [];
     let circlesCount  = 4;
+    const maxLength   = 800;
 
     class Circle {
         constructor(x, y) {
@@ -41,9 +42,15 @@
         }
     }
 
+
     function creatLigthing() {
         for (let i = 0; i < circles.length; i++) {
             for (let j = i + 1; j < circles.length; j++) {
+                let dist = getDistance(circles[a], circles[b]);
+                let cance = dist/maxLength;
+                
+                if (cance > Math.random()) continue;
+
                 ctx.lineWidth   = 2.5;
                 ctx.strokeStyle = 'white';
 
@@ -53,6 +60,10 @@
                 ctx.stroke();
             }
         }
+    };
+
+    function getDistance(a, b) {
+        return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2));
     }
 
     canvas.onmousemove = e => {
